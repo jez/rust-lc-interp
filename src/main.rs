@@ -6,20 +6,22 @@ extern crate lalrpop_util;
 
 lalrpop_mod!(pub lc);
 
-pub mod ast;
+pub mod parser;
+pub mod expr;
+pub mod bind;
 pub mod eval;
 
-fn eval_one(parser: &lc::ParserNodeParser, line: String) {
-    let parser_node = match parser.parse(&line) {
+fn eval_one(parser: &lc::NodeParser, line: String) {
+    let node = match parser.parse(&line) {
         Err(err) => {
             println!("🛑 {:?}", err);
             return
         }
-        Ok(parser_node) => parser_node,
+        Ok(node) => node,
     };
-    println!("Parsed: {:?}", &parser_node);
+    println!("Parsed: {:?}", &node);
 
-    let expr = match ast::bind(&parser_node) {
+    let expr = match bind::bind(&node) {
         Err(err) => {
             println!("🛑 {:?}", err);
             return
@@ -39,7 +41,7 @@ fn prompt() {
 }
 
 fn main() {
-    let parser = lc::ParserNodeParser::new();
+    let parser = lc::NodeParser::new();
 
     eval_one(&parser, r"(\x -> x) (\x -> x)".to_string());
 

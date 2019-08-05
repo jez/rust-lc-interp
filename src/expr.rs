@@ -1,47 +1,10 @@
 use std::fmt;
-use std::convert::TryFrom;
-
-// TODO(jez) How to add location information?
-#[derive(Debug, Clone)]
-pub enum ParserNode {
-    Var { var: String },
-    App { f: Box<ParserNode>, arg: Box<ParserNode> },
-    Lam { param: String, body: Box<ParserNode> },
-}
 
 #[derive(Debug, Clone)]
 pub enum Expr {
     Var { var: u32 },
     App { f: Box<Expr>, arg: Box<Expr> },
     Lam { body: Box<Expr> },
-}
-
-fn bind_impl(ctx: &mut Vec<String>, parser_node: &ParserNode) -> Result<Box<Expr>, String> {
-    match parser_node {
-        ParserNode::Var { var } => {
-            let idx = match ctx.iter().rev().enumerate().find(|&x| x.1 == var) {
-                // TODO(jez) Better error message when unbound variable
-                None => return Err(format!("Unbound variable: {}", var)),
-                Some((idx, _)) => idx,
-            };
-
-            Ok(Box::new(Expr::Var { var: u32::try_from(idx).unwrap() }))
-        }
-        ParserNode::App { ref f, ref arg } => {
-            Ok(Box::new(Expr::App { f: bind_impl(ctx, f)?, arg: bind_impl(ctx, arg)? }))
-        }
-        ParserNode::Lam { param, body } => {
-            ctx.push(param.clone());
-            let result = bind_impl(ctx, body)?;
-            ctx.pop();
-            Ok(Box::new(Expr::Lam { body: result }))
-        }
-    }
-}
-
-pub fn bind(parser_node: &ParserNode) -> Result<Box<Expr>, String> {
-    let mut ctx = vec![];
-    bind_impl(&mut ctx, parser_node)
 }
 
 impl Expr {
@@ -87,7 +50,7 @@ impl Expr {
             }
             Expr::Var { .. } => (),
             Expr::App { ref mut f, ref mut arg } => {
-                // Optimization: avoid cloning if `f` doesn't actually need `what`
+                // TODO(jez) Avoid cloning if `f` doesn't actually need `what`
                 f.subst(what.clone(), target);
                 arg.subst(what, target);
             }

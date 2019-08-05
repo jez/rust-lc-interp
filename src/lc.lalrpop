@@ -1,0 +1,20 @@
+use crate::ast::ParserNode;
+
+grammar;
+
+pub Ident: String = <s:r"[a-z]([A-Za-z_'])*"> => s.to_string();
+
+pub ParserNode: Box<ParserNode> = {
+    "\\" <param:Ident> r"->" <body:ParserNode> => Box::new(ParserNode::Lam {<>}),
+    <Fact>,
+}
+
+pub Fact: Box<ParserNode> = {
+    <f:Fact> <arg:Atom> => Box::new(ParserNode::App {<>}),
+    <Atom>,
+}
+
+pub Atom: Box<ParserNode> = {
+    "(" <ParserNode> ")",
+    <var:Ident> => Box::new(ParserNode::Var {<>}),
+}

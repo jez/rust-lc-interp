@@ -5,12 +5,15 @@ use crate::expr::Expr;
 
 use crate::global_state::*;
 
-struct BindContext {
-    gs: GlobalState,
+struct BindContext<'a> {
+    gs: &'a mut GlobalState,
     bound: Vec<NameRef>,
 }
 
-fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, String> {
+fn bind_impl(
+    ctx: &mut BindContext,
+    parser_node: &Node,
+) -> Result<Box<Expr>, String> {
     match parser_node {
         Node::Var { var } => {
             let var_name = ctx.gs.enter_name(var);
@@ -37,10 +40,11 @@ fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, Str
     }
 }
 
-pub fn bind(parser_node: &Node) -> Result<Box<Expr>, String> {
+pub fn bind(gs: &mut GlobalState, parser_node: &Node) -> Result<Box<Expr>, String> {
     // In reality, we would initialize GlobalState in main
-    let gs = GlobalState::new();
     let bound = Vec::new();
     let mut ctx = BindContext { gs, bound };
-    bind_impl(&mut ctx, parser_node)
+    let result = bind_impl(&mut ctx, parser_node);
+    gs.sanity_check();
+    result
 }

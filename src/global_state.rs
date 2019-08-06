@@ -44,7 +44,6 @@ pub struct GlobalState {
     hashes_to_name_ids: FnvHashMap<u32, usize>
 }
 
-
 impl GlobalState {
     pub fn enter_name(&mut self, string: &str) -> NameRef {
         let hash = sdbm_hash(string);
@@ -71,5 +70,13 @@ impl GlobalState {
         let no_name = Name { offset: 0, len: 0, idx: 0 };
         names.push(no_name);
         GlobalState { strings, names, hashes_to_name_ids }
+    }
+
+    pub fn sanity_check(&self) {
+        println!("┌─ GlobalState ──");
+        println!("│ strings:            {}", self.strings);
+        println!("│ names:              {:?}", self.names);
+        println!("│ hashes_to_name_ids: {:?}", self.hashes_to_name_ids);
+        println!("└────────────────");
     }
 }

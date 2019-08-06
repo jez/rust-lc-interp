@@ -12,7 +12,10 @@ pub mod global_state;
 pub mod bind;
 pub mod eval;
 
-fn eval_one(parser: &lc::NodeParser, line: String) {
+use global_state::GlobalState;
+
+fn eval_one(gs: &mut GlobalState, parser: &lc::NodeParser, line: String) {
+    println!("Input: {}", line);
     let node = match parser.parse(&line) {
         Err(err) => {
             println!("🛑 {:?}", err);
@@ -22,7 +25,7 @@ fn eval_one(parser: &lc::NodeParser, line: String) {
     };
     println!("Parsed: {:?}", &node);
 
-    let expr = match bind::bind(&node) {
+    let expr = match bind::bind(gs, &node) {
         Err(err) => {
             println!("🛑 {:?}", err);
             return
@@ -43,28 +46,29 @@ fn prompt() {
 
 fn main() {
     let parser = lc::NodeParser::new();
+    let mut gs = GlobalState::new();
 
-    eval_one(&parser, r"(\x -> x) (\x -> x)".to_string());
+    eval_one(&mut gs, &parser, r"(\x -> x) (\x -> x)".to_string());
 
     println!("Expect unbound variable:");
-    eval_one(&parser, r"(\x -> x) x".to_string());
+    eval_one(&mut gs, &parser, r"(\x -> x) x".to_string());
 
     let false_ = r"(\t -> \f -> f)";
     let true_  = r"(\t -> \f -> t)";
     let if_    = r"(\x -> \t -> \f -> x t f)";
-    eval_one(&parser, format!("{} {} {}", if_, true_, false_).to_string());
+    eval_one(&mut gs, &parser, format!("{} {} {}", if_, true_, false_).to_string());
 
     let _zero = r"(\s -> \z -> z)";
     let one   = r"(\s -> \z -> s z)";
     let two   = r"(\s -> \z -> s (s z))";
 
     let add   = r"(\m -> \n -> \s -> \z -> m s (n s z))";
-    eval_one(&parser, format!("{} {} {}", add, one, two).to_string());
+    eval_one(&mut gs, &parser, format!("{} {} {}", add, one, two).to_string());
 
     prompt();
     for maybe_line in io::stdin().lock().lines() {
         let line = &maybe_line.unwrap();
-        eval_one(&parser, line.to_string());
+        eval_one(&mut gs, &parser, line.to_string());
         prompt();
     }
 }

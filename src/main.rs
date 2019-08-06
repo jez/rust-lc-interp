@@ -6,9 +6,9 @@ extern crate lalrpop_util;
 
 lalrpop_mod!(pub lc);
 
+pub mod global_state;
 pub mod parser;
 pub mod expr;
-pub mod global_state;
 pub mod bind;
 pub mod eval;
 

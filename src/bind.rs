@@ -45,6 +45,6 @@ pub fn bind(gs: &mut GlobalState, parser_node: &Node) -> Result<Box<Expr>, Strin
     let bound = Vec::new();
     let mut ctx = BindContext { gs, bound };
     let result = bind_impl(&mut ctx, parser_node);
-    gs.sanity_check();
+    println!("{:?}", gs);
     result
 }

@@ -1,8 +1,9 @@
 use std::fmt;
+use std::hash::{Hash, Hasher};
 use std::str;
 
+use fnv::FnvHasher;
 use fnv::FnvHashMap;
-use sdbm::sdbm_hash;
 
 use super::name::*;
 
@@ -10,7 +11,7 @@ pub struct GlobalState {
     // TODO(jez) Convert to Vec<String>, chunk into pages
     pub(super) strings: String,
     pub(super) names: Vec<Name>,
-    pub(super) hashes_to_name_ids: FnvHashMap<u32, usize>
+    pub(super) hashes_to_name_ids: FnvHashMap<u64, usize>,
 }
 
 impl fmt::Debug for GlobalState {
@@ -25,7 +26,9 @@ impl fmt::Debug for GlobalState {
 
 impl GlobalState {
     pub fn enter_name(&mut self, string: &str) -> NameRef {
-        let hash = sdbm_hash(string);
+        let mut hasher = FnvHasher::default();
+        string.hash(&mut hasher);
+        let hash = hasher.finish();
 
         if let Some(idx) = self.hashes_to_name_ids.get(&hash) {
             // TODO(jez) Debug check: check for collisions?

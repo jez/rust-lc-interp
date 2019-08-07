@@ -15,7 +15,7 @@ fn bind_impl(
     parser_node: &Node,
 ) -> Result<Box<Expr>, String> {
     match parser_node {
-        Node::Var { var } => {
+        Node::Var { loc: _loc, var } => {
             let var_name = ctx.gs.enter_name(var);
             let idx = match ctx.bound.iter().rev().enumerate().find(|&x| *x.1 == var_name) {
                 // TODO(jez) Better error message when unbound variable
@@ -25,12 +25,12 @@ fn bind_impl(
 
             Ok(Box::new(Expr::Var { var: u32::try_from(idx).unwrap() }))
         }
-        Node::App { ref f, ref arg } => {
+        Node::App { loc: ref _loc, ref f, ref arg } => {
             let f = bind_impl(ctx, f)?;
             let arg = bind_impl(ctx, arg)?;
             Ok(Box::new(Expr::App { f, arg }))
         }
-        Node::Lam { param, body } => {
+        Node::Lam { loc: _loc, param, body } => {
             let name = ctx.gs.enter_name(param);
             ctx.bound.push(name);
             let result = bind_impl(ctx, body)?;

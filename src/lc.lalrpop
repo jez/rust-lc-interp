@@ -1,20 +1,25 @@
+use crate::loc::Loc;
+use crate::global_state::FileRef;
 use crate::parser::Node;
 
-grammar;
+grammar(file: FileRef);
 
 pub Ident: String = <s:r"[a-z]([A-Za-z_'])*"> => s.to_string();
 
 pub Node: Box<Node> = {
-    "\\" <param:Ident> r"->" <body:Node> => Box::new(Node::Lam {<>}),
+    <begin:@L> "\\" <param:Ident> r"->" <body:Node> <end:@R> =>
+      Box::new(Node::Lam { loc: Loc { begin, end, file }, param, body }),
     <Fact>,
 }
 
 pub Fact: Box<Node> = {
-    <f:Fact> <arg:Atom> => Box::new(Node::App {<>}),
+    <begin:@L> <f:Fact> <arg:Atom> <end:@R> =>
+      Box::new(Node::App { loc: Loc { begin, end, file }, f, arg }),
     <Atom>,
 }
 
 pub Atom: Box<Node> = {
     "(" <Node> ")",
-    <var:Ident> => Box::new(Node::Var {<>}),
+    <begin:@L> <var:Ident> <end:@R> =>
+      Box::new(Node::Var { loc: Loc { begin, end, file }, var }),
 }

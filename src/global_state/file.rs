@@ -39,4 +39,8 @@ impl File {
     pub fn contents(&self) -> &str {
         self.contents.as_str()
     }
+
+    pub fn no_file() -> FileRef {
+        FileRef { idx: 0 }
+    }
 }

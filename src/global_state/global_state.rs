@@ -2,7 +2,7 @@ use std::fmt;
 use std::fs;
 use std::hash::{Hash, Hasher};
 use std::io;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 use std::str;
 
 use fnv::FnvHasher;
@@ -79,8 +79,11 @@ impl GlobalState {
         let no_name = Name { offset: 0, len: 0, idx: 0 };
         names.push(no_name);
 
-        let files = Vec::new();
+        let mut files = Vec::new();
         let hashes_to_file_ids = FnvHashMap::default();
+
+        let no_file = File { path_buf: PathBuf::new(), contents: String::new(), idx: 0 };
+        files.push(no_file);
 
         GlobalState {
             strings,

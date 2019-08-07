@@ -6,6 +6,7 @@ extern crate lalrpop_util;
 
 lalrpop_mod!(pub lc);
 
+pub mod loc;
 pub mod global_state;
 pub mod parser;
 pub mod expr;
@@ -13,10 +14,11 @@ pub mod bind;
 pub mod eval;
 
 use global_state::GlobalState;
+use global_state::File;
 
 fn eval_one(gs: &mut GlobalState, parser: &lc::NodeParser, line: String) {
     println!("Input: {}", line);
-    let node = match parser.parse(&line) {
+    let node = match parser.parse(File::no_file(), &line) {
         Err(err) => {
             println!("🛑 {:?}", err);
             return

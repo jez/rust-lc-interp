@@ -2,6 +2,8 @@ use std::path::{PathBuf, Path};
 
 use super::global_state::*;
 
+// TODO(jez) Sorbet fits a FileRef into a single u16
+
 #[derive(PartialEq, Eq, Debug, Clone, Copy)]
 pub struct FileRef {
     pub(super) idx: usize,

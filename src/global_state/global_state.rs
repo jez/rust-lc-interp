@@ -1,17 +1,24 @@
 use std::fmt;
+use std::fs;
 use std::hash::{Hash, Hasher};
+use std::io;
+use std::path::Path;
 use std::str;
 
 use fnv::FnvHasher;
 use fnv::FnvHashMap;
 
 use super::name::*;
+use super::file::*;
 
 pub struct GlobalState {
     // TODO(jez) Convert to Vec<String>, chunk into pages
     pub(super) strings: String,
     pub(super) names: Vec<Name>,
     pub(super) hashes_to_name_ids: FnvHashMap<u64, usize>,
+
+    pub(super) files: Vec<File>,
+    pub(super) hashes_to_file_ids: FnvHashMap<u64, usize>,
 }
 
 impl fmt::Debug for GlobalState {
@@ -45,12 +52,42 @@ impl GlobalState {
         NameRef { idx }
     }
 
+    // TODO(jez) Read files only right before parsing them
+    pub fn enter_file(&mut self, path: &Path, contents: String) -> io::Result<FileRef> {
+        let path_buf = fs::canonicalize(path)?;
+
+        let mut hasher = FnvHasher::default();
+        path_buf.hash(&mut hasher);
+        let hash = hasher.finish();
+
+        if let Some(idx) = self.hashes_to_file_ids.get(&hash) {
+            // TODO(jez) Debug check: check for collisions?
+            return Ok(FileRef { idx: *idx });
+        }
+
+        let idx = self.files.len();
+        self.files.push(File { path_buf, contents, idx });
+
+        Ok(FileRef { idx })
+    }
+
     pub fn new() -> GlobalState {
         let strings = String::new();
         let mut names = Vec::new();
         let hashes_to_name_ids = FnvHashMap::default();
+
         let no_name = Name { offset: 0, len: 0, idx: 0 };
         names.push(no_name);
-        GlobalState { strings, names, hashes_to_name_ids }
+
+        let files = Vec::new();
+        let hashes_to_file_ids = FnvHashMap::default();
+
+        GlobalState {
+            strings,
+            names,
+            hashes_to_name_ids,
+            files,
+            hashes_to_file_ids,
+        }
     }
 }

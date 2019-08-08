@@ -27,6 +27,8 @@ impl fmt::Debug for GlobalState {
         write!(out, "│ strings:            {}\n",   self.strings)?;
         write!(out, "│ names:              {:?}\n", self.names)?;
         write!(out, "│ hashes_to_name_ids: {:?}\n", self.hashes_to_name_ids)?;
+        write!(out, "│ files:              {:?}\n", self.files)?;
+        write!(out, "│ hashes_to_file_ids: {:?}\n", self.hashes_to_file_ids)?;
         write!(out, "└────────────────")
     }
 }
@@ -52,8 +54,7 @@ impl GlobalState {
         NameRef { idx }
     }
 
-    // TODO(jez) Read files only right before parsing them
-    pub fn enter_file(&mut self, path: &Path, contents: String) -> io::Result<FileRef> {
+    pub fn enter_file(&mut self, path: &Path) -> io::Result<FileRef> {
         let path_buf = fs::canonicalize(path)?;
 
         let mut hasher = FnvHasher::default();
@@ -64,6 +65,9 @@ impl GlobalState {
             // TODO(jez) Debug check: check for collisions?
             return Ok(FileRef { idx: *idx });
         }
+
+        // TODO(jez) Read files only right before parsing them
+        let contents = fs::read_to_string(&path_buf)?;
 
         let idx = self.files.len();
         self.files.push(File { path_buf, contents, idx });

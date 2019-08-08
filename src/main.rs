@@ -25,7 +25,6 @@ fn eval_one(gs: &mut GlobalState, parser: &lc::NodeParser, line: String) {
         }
         Ok(node) => node,
     };
-    println!("Parsed: {:?}", &node);
 
     let expr = match bind::bind(gs, &node) {
         Err(err) => {
@@ -34,9 +33,7 @@ fn eval_one(gs: &mut GlobalState, parser: &lc::NodeParser, line: String) {
         }
         Ok(expr) => expr,
     };
-    println!("Bound:  {:?}", expr);
 
-    println!("Eval trace:");
     println!("   {}", expr);
     eval::eval(expr);
 }

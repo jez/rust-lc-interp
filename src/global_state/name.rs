@@ -7,7 +7,7 @@ pub struct NameRef {
 
 impl NameRef {
     pub fn exists(&self) -> bool {
-        self.idx == 0
+        self.idx != 0
     }
 
     pub fn data<'a>(&self, gs: &'a GlobalState) -> &'a Name {

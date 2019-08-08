@@ -20,11 +20,11 @@ fn trystep(mut expr: Box<Expr>) -> (TryStep, Box<Expr>) {
     match *expr {
         Expr::Var { .. } => (TryStep::Val, expr),
 
-        Expr::App { f, arg } => {
+        Expr::App { loc, f, arg } => {
             let f = match trystep(f) {
                 (TryStep::Val, f) => f,
                 (TryStep::Step, f) => {
-                    *expr = Expr::App { f, arg };
+                    *expr = Expr::App { loc, f, arg };
                     return (TryStep::Step, expr)
                 }
             };
@@ -32,13 +32,13 @@ fn trystep(mut expr: Box<Expr>) -> (TryStep, Box<Expr>) {
             let arg = match trystep(arg) {
                 (TryStep::Val, arg) => arg,
                 (TryStep::Step, arg) => {
-                    *expr = Expr::App { f, arg };
+                    *expr = Expr::App { loc, f, arg };
                     return (TryStep::Step, expr)
                 }
             };
 
             match *f {
-                Expr::Lam { mut body } => {
+                Expr::Lam { loc: _loc, mut body } => {
                     body.subst(arg, 0);
                     *expr = *body;
                     return (TryStep::Step, expr)
@@ -47,13 +47,13 @@ fn trystep(mut expr: Box<Expr>) -> (TryStep, Box<Expr>) {
                 Expr::App { .. } => (),
             }
 
-            *expr = Expr::App { f, arg };
+            *expr = Expr::App { loc, f, arg };
             (TryStep::Val, expr)
         }
 
-        Expr::Lam { body } => {
+        Expr::Lam { loc, body } => {
             let (result, body) = trystep(body);
-            *expr = Expr::Lam { body };
+            *expr = Expr::Lam { loc, body };
             (result, expr)
         }
     }

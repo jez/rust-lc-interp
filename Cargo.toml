@@ -1,5 +1,5 @@
 [package]
-name = "rust-lc-interp"
+name = "lc-interp"
 version = "0.1.0"
 authors = ["Jake Zimmerman <zimmerman.jake@gmail.com>"]
 edition = "2018"

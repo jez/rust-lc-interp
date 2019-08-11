@@ -11,7 +11,9 @@ pub enum Node {
     // TODO(jez) Add let bindings as derived form (desugar to fn + app)
 }
 
-pub fn parse_string(string: &str) -> Result<Box<Node>, String> {
+pub type ParseResult = Result<Box<Node>, String>;
+
+pub fn parse_string(string: &str) -> ParseResult {
     let parser = lc::NodeParser::new();
     match parser.parse(File::no_file(), string) {
         Err(err) => Err(format!("{}", err)),
@@ -19,7 +21,7 @@ pub fn parse_string(string: &str) -> Result<Box<Node>, String> {
     }
 }
 
-pub fn parse(gs: &GlobalState, file: FileRef) -> Result<Box<Node>, String> {
+pub fn parse(gs: &GlobalState, file: FileRef) -> ParseResult {
     let parser = lc::NodeParser::new();
     match parser.parse(file, file.data(gs).contents()) {
         // TODO(jez) Structured errors

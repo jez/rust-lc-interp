@@ -1,0 +1,9 @@
+(
+  \false_ ->
+  \true_ ->
+  \if_ ->
+    (if_ true_ false_ true_)
+)
+(\t -> \f -> f)
+(\t -> \f -> t)
+(\x -> \t -> \f -> x t f)

@@ -1,0 +1,5 @@
+let false_ = \t -> \f -> f;
+let true_  = \t -> \f -> t;
+let if_    = \x -> \t -> \f -> x t f;
+let not    = \b -> if_ b false_ true_;
+not true_

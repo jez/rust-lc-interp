@@ -36,6 +36,10 @@ fn bind_impl(
             ctx.bound.pop();
             Ok(Box::new(Expr::Lam { loc: *loc, body: result }))
         }
+
+        Node::Let { .. } => {
+            panic!("Should have been removed by desugar")
+        }
     }
 }
 

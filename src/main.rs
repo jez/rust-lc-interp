@@ -8,8 +8,10 @@ use std::path::PathBuf;
 
 pub mod loc;
 pub mod global_state;
-pub mod parser;
 pub mod expr;
+
+pub mod parser;
+pub mod desugar;
 pub mod bind;
 pub mod eval;
 
@@ -33,7 +35,9 @@ fn eval_node(gs: &mut GlobalState, parsed: parser::ParseResult) {
         Ok(node) => node,
     };
 
-    let expr = match bind::bind(gs, &node) {
+    let desugared = desugar::desugar(node);
+
+    let expr = match bind::bind(gs, &desugared) {
         Err(err) => {
             println!("🛑 {}", err);
             return

@@ -1,1 +1,4 @@
-(\m -> \n -> \s -> \z -> m s (n s z)) (\s -> \z -> s z) (\s -> \z -> s (s z))
+let add = \m -> \n -> \s -> \z -> m s (n s z);
+let one = \s -> \z -> s z;
+let two = \s -> \z -> s (s z);
+add one two

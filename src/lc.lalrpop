@@ -9,6 +9,8 @@ pub Ident: String = <s:r"[a-z]([A-Za-z_'])*"> => s.to_string();
 pub Node: Box<Node> = {
     <begin:@L> "\\" <param:Ident> r"->" <body:Node> <end:@R> =>
       Box::new(Node::Lam { loc: Loc { begin, end, file }, param, body }),
+    <begin:@L> "let" <bind:Ident> r"=" <what:Node> r";" <in_where:Node> <end:@R> =>
+      Box::new(Node::Let { loc: Loc { begin, end, file }, bind, what, in_where }),
     <Fact>,
 }
 

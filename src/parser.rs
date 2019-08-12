@@ -8,7 +8,7 @@ pub enum Node {
     Var { loc: Loc, var: String },
     App { loc: Loc, f: Box<Node>, arg: Box<Node> },
     Lam { loc: Loc, param: String, body: Box<Node> },
-    // TODO(jez) Add let bindings as derived form (desugar to fn + app)
+    Let { loc: Loc, bind: String, what: Box<Node>, in_where: Box<Node> }
 }
 
 pub type ParseResult = Result<Box<Node>, String>;

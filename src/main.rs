@@ -1,10 +1,12 @@
 #[macro_use]
 extern crate lalrpop_util;
 
-use std::env;
 use std::io::prelude::*;
 use std::io;
 use std::path::PathBuf;
+
+use docopt::Docopt;
+use serde::Deserialize;
 
 pub mod loc;
 pub mod global_state;
@@ -60,19 +62,33 @@ enum Options {
     Repl,
 }
 
-fn parse_args() -> Options {
-    for (i, arg) in env::args().enumerate() {
-        if i == 0 {
-            continue
-        }
+const USAGE: &'static str = "
+Toy interpreter for the lambda calculus
 
-        match arg.as_ref() {
-            "--help" => return Options::Help,
-            _ => return Options::FromFile(PathBuf::from(arg)),
-        }
+Usage:
+  lc-interp [<file>]
+  lc-interp --help
+";
+
+#[derive(Debug, Deserialize)]
+struct DocoptArgs {
+    arg_file: Option<String>,
+    flag_help: bool,
+}
+
+fn parse_args() -> Options {
+    let args: DocoptArgs = Docopt::new(USAGE)
+        .and_then(|d| d.deserialize())
+        .unwrap_or_else(|e| e.exit());
+
+    if args.flag_help {
+        return Options::Help
     }
 
-    return Options::Repl
+    match args.arg_file {
+        None => return Options::Repl,
+        Some(string) => return Options::FromFile(PathBuf::from(string)),
+    }
 }
 
 fn main() -> io::Result<()> {

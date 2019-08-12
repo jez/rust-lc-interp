@@ -57,7 +57,6 @@ fn prompt() {
 }
 
 enum Options {
-    Help,
     FromFile(PathBuf),
     Repl,
 }
@@ -73,17 +72,12 @@ Usage:
 #[derive(Debug, Deserialize)]
 struct DocoptArgs {
     arg_file: Option<String>,
-    flag_help: bool,
 }
 
 fn parse_args() -> Options {
     let args: DocoptArgs = Docopt::new(USAGE)
         .and_then(|d| d.deserialize())
         .unwrap_or_else(|e| e.exit());
-
-    if args.flag_help {
-        return Options::Help
-    }
 
     match args.arg_file {
         None => return Options::Repl,
@@ -95,16 +89,6 @@ fn main() -> io::Result<()> {
     let options = parse_args();
 
     match options {
-        Options::Help => {
-            println!("");
-            println!("Toy interpreter for the lambda calculus");
-            println!("");
-            println!("Usage:");
-            println!("  lc-interp");
-            println!("  lc-interp <file>");
-            println!("  lc-interp --help");
-            println!("");
-        }
         Options::FromFile(path_buf) => {
             let mut gs = GlobalState::new();
             let file = gs.enter_file(path_buf.as_path())?;

@@ -1,0 +1,12 @@
+let pair = \fst -> \snd -> \f -> f fst snd;
+let fst = \p -> p (\x -> \y -> x);
+let snd = \p -> p (\x -> \y -> y);
+
+let pred = \n ->
+  \s -> \z ->
+    fst (n (\acc -> pair (snd acc) (s (snd acc))) (pair z z));
+let sub = \n -> \m -> m pred n;
+
+let three = \s -> \z -> s (s (s z));
+let five = \s -> \z -> s (s (s (s (s z))));
+sub five three

@@ -1,0 +1,7 @@
+let pred = \n -> \s -> \z ->
+  n (\g -> \f -> f (g s)) (\f -> z) (\x -> x);
+let sub = \n -> \m -> m pred n;
+
+let three = \s -> \z -> s (s (s z));
+let five = \s -> \z -> s (s (s (s (s z))));
+sub five three

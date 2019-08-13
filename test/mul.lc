@@ -1,0 +1,6 @@
+let zero = \s -> \z -> z;
+let add = \m -> \n -> \s -> \z -> m s (n s z);
+let mul = \m -> \n -> m (add n) zero;
+let three = \s -> \z -> s (s (s z));
+let five = \s -> \z -> s (s (s (s (s z))));
+mul three five

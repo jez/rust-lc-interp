@@ -1,4 +1,4 @@
 let add = \m -> \n -> \s -> \z -> m s (n s z);
-let one = \s -> \z -> s z;
-let two = \s -> \z -> s (s z);
-add one two
+let three = \s -> \z -> s (s (s z));
+let five = \s -> \z -> s (s (s (s (s z))));
+add three five

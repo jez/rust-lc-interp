@@ -1,5 +1,20 @@
 language: rust
 cache: cargo
+
 os:
   - linux
   - osx
+
+before_deploy:
+  - cargo install --verbose --path .
+  - cd "$HOME/.cargo/bin" && zip "lc-interp-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.zip" ./lc-interp
+
+# Created with 'travis setup releases'
+deploy:
+  provider: releases
+  api_key:
+    secure: YjYuKa4DiyEhtL/tjeub7Q6J8vHuaCEcSh1ydhlrFvTnHu1Ekbjkaf3BXx4h17dsNnVa6widCs2CuUdpUdoql8E9FPsoPXROhPexpv/VddVvm6bwFfKfDPOvOEKFKQGdc8/1O+5StmhWVQT2P9KSc82XOKekpRM0SpOfgVjHzeokK5QxS8h0CbpYZCvdWVcMA8901XnXtymJ3KAIU8kRQ1t1xzkOy79uI6OjQVgPYQ8bN48Z5reeSJse7OlSGFeOKm3U7ViuXfYJ5FA76Kvl2kXWhHjTSIubiHW7lj9hBMxxAbUmNb1BHK7sUzt8wcxvrFtF0zln5URB6Uv85gsWIEgCQN169J9aZYObvxTZMPqdJ0TcS4bVFhlxT8GLbSdbl1FaJD5Xcv7veHIiqnvN/SAuZ2SerBnbEUHLuDuGsE15ygxef1hk8DWwQUJW6laJP4Q8hJ5fWTjLr8S1PLhH1Tjaf8V+aThnpmkaZ46TcRRKR/2KafIAgItjQiMo2gi890SUN86SJ2TGc6ACliXK4phhVrEGey5BZIYa832O33AkxBK3ATEKAQ2OaxtrTJxotSzOPbtzEOuA4ryaY27huC08Af30Y9nkBMRdBqA8OEy+RdjsOvPMeFl8WdIdjAnI3UCM7BvY7Q0xEqt6Fu9tB5/XaEaf4wujZnkINsCKWOU=
+  file: "$HOME/.cargo/bin/lc-interp-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.zip"
+  on:
+    tags: true
+    repo: jez/rust-lc-interp

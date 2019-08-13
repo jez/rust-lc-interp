@@ -6,6 +6,9 @@ If you care to look at the code, please know that I Have No Idea What I'm Doing.
 
 ## Usage
 
+Clone the repo and then `cargo run` to start the REPL. Syntax is Haskell syntax
+for lambdas and ReasonML syntax for let bindings:
+
 ```
 ❯ cargo run
 ...
@@ -13,7 +16,13 @@ If you care to look at the code, please know that I Have No Idea What I'm Doing.
 λ> (\x -> x) (\x -> x)
 ...
 => \ -> #0
+λ> let id = \x -> x; id id
+...
+=> \ -> #0
 ```
+
+If you don't want to clone or don't have a cargo setup, you can play around with
+a release from the Releases page.
 
 ## Notes
 

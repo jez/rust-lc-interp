@@ -5,8 +5,14 @@ os:
   - linux
   - osx
 
+install:
+  - cargo build
+
+script:
+  - cargo build && cargo test
+
 before_deploy:
-  - cargo install --verbose --path .
+  - cargo install --path .
   - cd "$HOME/.cargo/bin" && zip "lc-interp-${TRAVIS_TAG}-${TRAVIS_OS_NAME}.zip" ./lc-interp
 
 # Created with 'travis setup releases'

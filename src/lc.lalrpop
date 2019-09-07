@@ -1,6 +1,6 @@
 use crate::loc::Loc;
 use crate::global_state::FileRef;
-use crate::parser::{Var, App, Node};
+use crate::parser::{Var, App, Lam, Node};
 
 grammar(file: FileRef);
 
@@ -8,7 +8,7 @@ pub Ident: String = <s:r"[a-z]([A-Za-z_'])*"> => s.to_string();
 
 pub Node: Box<Node> = {
     <begin:@L> "\\" <param:Ident> r"->" <body:Node> <end:@R> =>
-      Box::new(Node::Lam { loc: Loc { begin, end, file }, param, body }),
+      Box::new(Node::Lam (Lam { loc: Loc { begin, end, file }, param, body })),
     <begin:@L> "let" <bind:Ident> r"=" <what:Node> r";" <in_where:Node> <end:@R> =>
       Box::new(Node::Let { loc: Loc { begin, end, file }, bind, what, in_where }),
     <Fact>,

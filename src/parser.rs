@@ -17,14 +17,17 @@ pub struct App {
 }
 
 #[derive(Debug, Clone)]
+pub struct Lam {
+    pub loc: Loc,
+    pub param: String,
+    pub body: Box<Node>,
+}
+
+#[derive(Debug, Clone)]
 pub enum Node {
     Var(Var),
     App(App),
-    Lam {
-        loc: Loc,
-        param: String,
-        body: Box<Node>,
-    },
+    Lam(Lam),
     Let {
         loc: Loc,
         bind: String,

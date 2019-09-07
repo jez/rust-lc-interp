@@ -1,18 +1,18 @@
 use crate::parser::{App, Node};
 
 pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
-    match *parser_node {
-        Node::Var { .. } => (),
+    *parser_node = match *parser_node {
+        Node::Var(var) => Node::Var(var),
 
-        Node::App(App { loc, f, arg }) => {
-            let f = desugar(f);
-            let arg = desugar(arg);
-            *parser_node = Node::App(App { loc, f, arg });
+        Node::App(mut app) => {
+            app.f = desugar(app.f);
+            app.arg = desugar(app.arg);
+            Node::App(app)
         }
 
         Node::Lam { loc, param, body } => {
             let body = desugar(body);
-            *parser_node = Node::Lam { loc, param, body };
+            Node::Lam { loc, param, body }
         }
 
         Node::Let {
@@ -24,7 +24,7 @@ pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
             let what = desugar(what);
             let in_where = desugar(in_where);
 
-            *parser_node = Node::App(App {
+            Node::App(App {
                 loc,
                 f: Box::new(Node::Lam {
                     loc,
@@ -34,7 +34,6 @@ pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
                 arg: what,
             })
         }
-    }
-
+    };
     parser_node
 }

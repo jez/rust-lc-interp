@@ -1,21 +1,21 @@
 #[macro_use]
 extern crate lalrpop_util;
 
-use std::io::prelude::*;
 use std::io;
+use std::io::prelude::*;
 use std::path::PathBuf;
 
 use docopt::Docopt;
 use serde::Deserialize;
 
-pub mod loc;
-pub mod global_state;
 pub mod expr;
+pub mod global_state;
+pub mod loc;
 
-pub mod parser;
-pub mod desugar;
 pub mod bind;
+pub mod desugar;
 pub mod eval;
+pub mod parser;
 
 use global_state::FileRef;
 use global_state::GlobalState;
@@ -32,7 +32,7 @@ fn eval_node(gs: &mut GlobalState, parsed: parser::ParseResult) {
     let node = match parsed {
         Err(err) => {
             println!("🛑 {}", err);
-            return
+            return;
         }
         Ok(node) => node,
     };
@@ -42,7 +42,7 @@ fn eval_node(gs: &mut GlobalState, parsed: parser::ParseResult) {
     let expr = match bind::bind(gs, &desugared) {
         Err(err) => {
             println!("🛑 {}", err);
-            return
+            return;
         }
         Ok(expr) => expr,
     };

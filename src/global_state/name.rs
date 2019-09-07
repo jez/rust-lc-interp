@@ -29,8 +29,10 @@ impl Name {
     }
 
     pub fn show<'a>(&self, gs: &'a GlobalState) -> &'a str {
-        debug_assert!(self.to_name_ref().exists(), "Name::show for non-existent Name");
-        &gs.strings[self.offset .. (self.offset + self.len)]
+        debug_assert!(
+            self.to_name_ref().exists(),
+            "Name::show for non-existent Name"
+        );
+        &gs.strings[self.offset..(self.offset + self.len)]
     }
 }
-

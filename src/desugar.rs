@@ -16,13 +16,22 @@ pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
             *parser_node = Lam { loc, param, body };
         }
 
-        Let { loc, bind, what, in_where } => {
+        Let {
+            loc,
+            bind,
+            what,
+            in_where,
+        } => {
             let what = desugar(what);
             let in_where = desugar(in_where);
 
             *parser_node = App {
                 loc,
-                f: Box::new(Lam { loc, param: bind, body: in_where }),
+                f: Box::new(Lam {
+                    loc,
+                    param: bind,
+                    body: in_where,
+                }),
                 arg: what,
             }
         }

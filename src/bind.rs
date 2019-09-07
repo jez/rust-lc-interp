@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
-use crate::parser::Node;
 use crate::expr::Expr;
+use crate::parser::Node;
 
 use crate::global_state::*;
 
@@ -10,21 +10,31 @@ struct BindContext<'a> {
     bound: Vec<NameRef>,
 }
 
-fn bind_impl(
-    ctx: &mut BindContext,
-    parser_node: &Node,
-) -> Result<Box<Expr>, String> {
+fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, String> {
     match parser_node {
         Node::Var { loc, var } => {
             let var_name = ctx.gs.enter_name(var);
-            let idx = match ctx.bound.iter().rev().enumerate().find(|&x| *x.1 == var_name) {
+            let idx = match ctx
+                .bound
+                .iter()
+                .rev()
+                .enumerate()
+                .find(|&x| *x.1 == var_name)
+            {
                 None => return Err(format!("Unbound variable: {} at {}", var, loc.show(ctx.gs))),
                 Some((idx, _)) => idx,
             };
 
-            Ok(Box::new(Expr::Var { loc: *loc, var: u32::try_from(idx).unwrap() }))
+            Ok(Box::new(Expr::Var {
+                loc: *loc,
+                var: u32::try_from(idx).unwrap(),
+            }))
         }
-        Node::App { ref loc, ref f, ref arg } => {
+        Node::App {
+            ref loc,
+            ref f,
+            ref arg,
+        } => {
             let f = bind_impl(ctx, f)?;
             let arg = bind_impl(ctx, arg)?;
             Ok(Box::new(Expr::App { loc: *loc, f, arg }))
@@ -34,12 +44,13 @@ fn bind_impl(
             ctx.bound.push(name);
             let result = bind_impl(ctx, body)?;
             ctx.bound.pop();
-            Ok(Box::new(Expr::Lam { loc: *loc, body: result }))
+            Ok(Box::new(Expr::Lam {
+                loc: *loc,
+                body: result,
+            }))
         }
 
-        Node::Let { .. } => {
-            panic!("Should have been removed by desugar")
-        }
+        Node::Let { .. } => panic!("Should have been removed by desugar"),
     }
 }
 

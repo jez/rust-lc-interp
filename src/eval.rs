@@ -1,5 +1,5 @@
-use std::fmt;
 use crate::expr::Expr;
+use std::fmt;
 
 #[derive(Debug)]
 enum TryStep {
@@ -25,7 +25,7 @@ fn trystep(mut expr: Box<Expr>) -> (TryStep, Box<Expr>) {
                 (TryStep::Val, f) => f,
                 (TryStep::Step, f) => {
                     *expr = Expr::App { loc, f, arg };
-                    return (TryStep::Step, expr)
+                    return (TryStep::Step, expr);
                 }
             };
 
@@ -33,15 +33,18 @@ fn trystep(mut expr: Box<Expr>) -> (TryStep, Box<Expr>) {
                 (TryStep::Val, arg) => arg,
                 (TryStep::Step, arg) => {
                     *expr = Expr::App { loc, f, arg };
-                    return (TryStep::Step, expr)
+                    return (TryStep::Step, expr);
                 }
             };
 
             match *f {
-                Expr::Lam { loc: _loc, mut body } => {
+                Expr::Lam {
+                    loc: _loc,
+                    mut body,
+                } => {
                     body.subst(arg, 0);
                     *expr = *body;
-                    return (TryStep::Step, expr)
+                    return (TryStep::Step, expr);
                 }
                 Expr::Var { .. } => (),
                 Expr::App { .. } => (),

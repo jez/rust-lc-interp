@@ -22,11 +22,8 @@ fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, Str
                 .find(|&x| *x.1 == var_name)
             {
                 None => {
-                    return Err(format!(
-                        "Unbound variable: {} at {}",
-                        v.var,
-                        v.loc.show(ctx.gs)
-                    ))
+                    let at = v.loc.show(ctx.gs);
+                    return Err(format!("Unbound variable: {} at {}", v.var, at));
                 }
                 Some((idx, _)) => idx,
             };
@@ -61,7 +58,6 @@ fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, Str
 }
 
 pub fn bind(gs: &mut GlobalState, parser_node: &Node) -> Result<Box<Expr>, String> {
-    // In reality, we would initialize GlobalState in main
     let bound = Vec::new();
     let mut ctx = BindContext { gs, bound };
     let result = bind_impl(&mut ctx, parser_node);

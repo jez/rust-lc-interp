@@ -24,16 +24,19 @@ pub struct Lam {
 }
 
 #[derive(Debug, Clone)]
+pub struct Let {
+    pub loc: Loc,
+    pub bind: String,
+    pub what: Box<Node>,
+    pub in_where: Box<Node>,
+}
+
+#[derive(Debug, Clone)]
 pub enum Node {
     Var(Var),
     App(App),
     Lam(Lam),
-    Let {
-        loc: Loc,
-        bind: String,
-        what: Box<Node>,
-        in_where: Box<Node>,
-    },
+    Let(Let),
 }
 
 pub type ParseResult = Result<Box<Node>, String>;

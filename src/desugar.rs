@@ -1,4 +1,4 @@
-use crate::parser::{App, Lam, Node};
+use crate::parser::{App, Lam, Let, Node};
 
 pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
     *parser_node = match *parser_node {
@@ -15,12 +15,12 @@ pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
             Node::Lam(lam)
         }
 
-        Node::Let {
+        Node::Let(Let {
             loc,
             bind,
             what,
             in_where,
-        } => {
+        }) => {
             let what = desugar(what);
             let in_where = desugar(in_where);
 

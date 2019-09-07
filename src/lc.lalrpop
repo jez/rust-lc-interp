@@ -1,6 +1,6 @@
 use crate::loc::Loc;
 use crate::global_state::FileRef;
-use crate::parser::{Var, Node};
+use crate::parser::{Var, App, Node};
 
 grammar(file: FileRef);
 
@@ -16,7 +16,7 @@ pub Node: Box<Node> = {
 
 pub Fact: Box<Node> = {
     <begin:@L> <f:Fact> <arg:Atom> <end:@R> =>
-      Box::new(Node::App { loc: Loc { begin, end, file }, f, arg }),
+      Box::new(Node::App (App { loc: Loc { begin, end, file }, f, arg })),
     <Atom>,
 }
 

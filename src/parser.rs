@@ -10,13 +10,16 @@ pub struct Var {
 }
 
 #[derive(Debug, Clone)]
+pub struct App {
+    pub loc: Loc,
+    pub f: Box<Node>,
+    pub arg: Box<Node>,
+}
+
+#[derive(Debug, Clone)]
 pub enum Node {
     Var(Var),
-    App {
-        loc: Loc,
-        f: Box<Node>,
-        arg: Box<Node>,
-    },
+    App(App),
     Lam {
         loc: Loc,
         param: String,

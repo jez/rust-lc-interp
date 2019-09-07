@@ -1,7 +1,7 @@
 use std::convert::TryFrom;
 
 use crate::expr::Expr;
-use crate::parser::Node;
+use crate::parser::{App, Node};
 
 use crate::global_state::*;
 
@@ -36,11 +36,11 @@ fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, Str
                 var: u32::try_from(idx).unwrap(),
             }))
         }
-        Node::App {
+        Node::App(App {
             ref loc,
             ref f,
             ref arg,
-        } => {
+        }) => {
             let f = bind_impl(ctx, f)?;
             let arg = bind_impl(ctx, arg)?;
             Ok(Box::new(Expr::App { loc: *loc, f, arg }))

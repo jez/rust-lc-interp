@@ -4,11 +4,14 @@ use crate::global_state::{File, FileRef, GlobalState};
 use crate::loc::Loc;
 
 #[derive(Debug, Clone)]
+pub struct Var {
+    pub loc: Loc,
+    pub var: String,
+}
+
+#[derive(Debug, Clone)]
 pub enum Node {
-    Var {
-        loc: Loc,
-        var: String,
-    },
+    Var(Var),
     App {
         loc: Loc,
         f: Box<Node>,

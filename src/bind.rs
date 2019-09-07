@@ -12,8 +12,8 @@ struct BindContext<'a> {
 
 fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, String> {
     match parser_node {
-        Node::Var { loc, var } => {
-            let var_name = ctx.gs.enter_name(var);
+        Node::Var(v) => {
+            let var_name = ctx.gs.enter_name(&v.var);
             let idx = match ctx
                 .bound
                 .iter()
@@ -21,12 +21,18 @@ fn bind_impl(ctx: &mut BindContext, parser_node: &Node) -> Result<Box<Expr>, Str
                 .enumerate()
                 .find(|&x| *x.1 == var_name)
             {
-                None => return Err(format!("Unbound variable: {} at {}", var, loc.show(ctx.gs))),
+                None => {
+                    return Err(format!(
+                        "Unbound variable: {} at {}",
+                        v.var,
+                        v.loc.show(ctx.gs)
+                    ))
+                }
                 Some((idx, _)) => idx,
             };
 
             Ok(Box::new(Expr::Var {
-                loc: *loc,
+                loc: v.loc,
                 var: u32::try_from(idx).unwrap(),
             }))
         }

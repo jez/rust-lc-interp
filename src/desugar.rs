@@ -10,9 +10,9 @@ pub fn desugar(mut parser_node: Box<Node>) -> Box<Node> {
             Node::App(app)
         }
 
-        Node::Lam(Lam { loc, param, body }) => {
-            let body = desugar(body);
-            Node::Lam(Lam { loc, param, body })
+        Node::Lam(mut lam) => {
+            lam.body = desugar(lam.body);
+            Node::Lam(lam)
         }
 
         Node::Let {
